@@ -18,17 +18,32 @@ fun TodoScreen(vm: TodoViewModel = viewModel()) {
     val todos by vm.todos.collectAsState()
     val filter by vm.filter.collectAsState()
     var text by rememberSaveable { mutableStateOf("") }
+    var query by rememberSaveable { mutableStateOf("") }
 
-    // compute filtered todos based on selected filter
-    val filteredTodos = remember(todos, filter) {
-        when (filter) {
+    // compute filtered todos based on selected filter and search query
+    val filteredTodos = remember(todos, filter, query) {
+        val byStatus = when (filter) {
             TodoFilter.All -> todos
             TodoFilter.Active -> todos.filter { !it.isDone }
             TodoFilter.Completed -> todos.filter { it.isDone }
         }
+        if (query.isBlank()) byStatus
+        else {
+            val q = query.trim().lowercase()
+            byStatus.filter { it.title.lowercase().contains(q) }
+        }
     }
 
     Column(Modifier.padding(16.dp)) {
+        OutlinedTextField(
+            value = query,
+            onValueChange = { query = it },
+            label = { Text("Cari tugas...") },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
         OutlinedTextField(
             value = text,
             onValueChange = { text = it },
