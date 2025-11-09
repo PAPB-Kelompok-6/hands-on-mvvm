@@ -20,6 +20,10 @@ fun TodoScreen(vm: TodoViewModel = viewModel()) {
     var text by rememberSaveable { mutableStateOf("") }
     var query by rememberSaveable { mutableStateOf("") }
 
+    val totalCount = todos.size
+    val activeCount = todos.count { !it.isDone }
+    val completedCount = todos.count { it.isDone }
+
     // compute filtered todos based on selected filter and search query
     val filteredTodos = remember(todos, filter, query) {
         val byStatus = when (filter) {
@@ -66,19 +70,19 @@ fun TodoScreen(vm: TodoViewModel = viewModel()) {
             FilterChip(
                 selected = filter == TodoFilter.All,
                 onClick = { vm.setFilter(TodoFilter.All) },
-                label = { Text("Semua") },
+                label = { Text("Semua ($totalCount)") },
                 modifier = Modifier.padding(end = 8.dp)
             )
             FilterChip(
                 selected = filter == TodoFilter.Active,
                 onClick = { vm.setFilter(TodoFilter.Active) },
-                label = { Text("Aktif") },
+                label = { Text("Aktif ($activeCount)") },
                 modifier = Modifier.padding(end = 8.dp)
             )
             FilterChip(
                 selected = filter == TodoFilter.Completed,
                 onClick = { vm.setFilter(TodoFilter.Completed) },
-                label = { Text("Selesai") }
+                label = { Text("Selesai ($completedCount)") }
             )
         }
 
