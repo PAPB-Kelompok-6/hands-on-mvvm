@@ -42,8 +42,10 @@ android {
 
 dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.6")
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.0")
     implementation("androidx.room:room-runtime:2.8.2")
     implementation("androidx.room:room-ktx:2.8.2")
+    implementation(libs.androidx.compose.ui.text)
     kapt("androidx.room:room-compiler:2.8.2")
 
     implementation(libs.androidx.core.ktx)
