@@ -5,7 +5,11 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.Checkbox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -16,7 +20,8 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import com.kelompok6.todolistreactiveapp.model.Todo
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
+import java.util.Locale
 
 @Composable
 fun TodoItem(
@@ -38,15 +43,18 @@ fun TodoItem(
     ) {
         Checkbox(checked = todo.isDone, onCheckedChange = { onToggle() })
         Spacer(Modifier.width(8.dp))
-        Column(modifier = Modifier.weight(1f)) {
+        Column(Modifier.weight(1f)) {
             Text(
                 text = todo.title,
-                style = if (todo.isDone) TextStyle(textDecoration =
-                    TextDecoration.LineThrough)
-                else LocalTextStyle.current
+                style = if (todo.isDone)
+                    TextStyle(textDecoration = TextDecoration.LineThrough)
+                else MaterialTheme.typography.bodyLarge
             )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(text = "Created: $created", style = MaterialTheme.typography.bodySmall)
+            Spacer(Modifier.height(4.dp))
+            Text(
+                text = "Created: $created",
+                style = MaterialTheme.typography.bodySmall
+            )
         }
         IconButton(onClick = onDelete) {
             Icon(Icons.Default.Delete, contentDescription = "Delete")

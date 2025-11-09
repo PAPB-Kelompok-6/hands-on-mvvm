@@ -11,10 +11,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.kelompok6.todolistreactiveapp.viewmodel.TodoViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.kelompok6.todolistreactiveapp.ui.TodoItem
 import com.kelompok6.todolistreactiveapp.model.TodoDatabase
 import com.kelompok6.todolistreactiveapp.model.TodoRepository
 import com.kelompok6.todolistreactiveapp.viewmodel.TodoViewModel.TodoFilter
 import com.kelompok6.todolistreactiveapp.viewmodel.TodoViewModelFactory
+
 
 
 @Composable
@@ -36,8 +38,7 @@ fun TodoScreen() {
     val totalCount = todos.size
     val activeCount = todos.count { !it.isDone }
     val completedCount = todos.count { it.isDone }
-
-    // compute filtered todos based on selected filter and search query
+   // compute filtered todos based on selected filter and search query
     val filteredTodos = remember(todos, filter, query) {
         val byStatus = when (filter) {
             TodoFilter.All -> todos
@@ -102,10 +103,10 @@ fun TodoScreen() {
         // use HorizontalDivider (material3) to avoid deprecation
         HorizontalDivider()
         LazyColumn {
-            items(filteredTodos) { todo ->
+            items(items = filteredTodos, key = { it.id }) { todo ->
                 TodoItem(
                     todo = todo,
-                    onToggle = { vm.toggleTask(todo.copy(isDone = !todo.isDone)) }, //copy di sini aja lah malash
+                    onToggle = { vm.toggleTask(todo) },
                     onDelete = { vm.deleteTask(todo) }
                 )
             }

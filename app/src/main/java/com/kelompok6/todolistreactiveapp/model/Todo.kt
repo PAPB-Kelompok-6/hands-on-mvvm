@@ -5,7 +5,7 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "todo")
 data class Todo(
-    @PrimaryKey(true) val id: Int = 0,
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val title: String,
     val isDone: Boolean = false,
     val createdAt: Long = System.currentTimeMillis()
