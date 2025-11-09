@@ -7,14 +7,27 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.kelompok6.todolistreactiveapp.viewmodel.TodoViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.kelompok6.todolistreactiveapp.model.TodoDatabase
+import com.kelompok6.todolistreactiveapp.model.TodoRepository
 import com.kelompok6.todolistreactiveapp.viewmodel.TodoViewModel.TodoFilter
+import com.kelompok6.todolistreactiveapp.viewmodel.TodoViewModelFactory
 
 
 @Composable
-fun TodoScreen(vm: TodoViewModel = viewModel()) {
+fun TodoScreen() {
+    // Inisialisasi Room Database, Repository, dan ViewModel
+    val context = LocalContext.current
+    val database = remember { TodoDatabase.getDatabase(context) }
+    val repository = remember { TodoRepository(database.todoDao()) }
+    val factory = remember { TodoViewModelFactory(repository) }
+
+    // pindah vm jadi di sini
+    val vm: TodoViewModel = viewModel(factory = factory)
+
     val todos by vm.todos.collectAsState()
     val filter by vm.filter.collectAsState()
     var text by rememberSaveable { mutableStateOf("") }
@@ -92,8 +105,8 @@ fun TodoScreen(vm: TodoViewModel = viewModel()) {
             items(filteredTodos) { todo ->
                 TodoItem(
                     todo = todo,
-                    onToggle = { vm.toggleTask(todo.id) },
-                    onDelete = { vm.deleteTask(todo.id) }
+                    onToggle = { vm.toggleTask(todo.copy(isDone = !todo.isDone)) }, //copy di sini aja lah malash
+                    onDelete = { vm.deleteTask(todo) }
                 )
             }
         }

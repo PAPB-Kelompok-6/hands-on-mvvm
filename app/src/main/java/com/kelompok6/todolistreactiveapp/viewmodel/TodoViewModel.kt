@@ -1,11 +1,15 @@
 package com.kelompok6.todolistreactiveapp.viewmodel
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.kelompok6.todolistreactiveapp.model.Todo
+import com.kelompok6.todolistreactiveapp.model.TodoRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
-class TodoViewModel : ViewModel() {
+class TodoViewModel(private val repos: TodoRepository) : ViewModel() {
     private val _todos = MutableStateFlow<List<Todo>>(emptyList())
     val todos: StateFlow<List<Todo>> = _todos
 
@@ -15,23 +19,32 @@ class TodoViewModel : ViewModel() {
     private val _filter = MutableStateFlow(TodoFilter.All)
     val filter: StateFlow<TodoFilter> = _filter
 
+    init {
+        viewModelScope.launch {
+            repos.allTodo.collectLatest { list ->
+                _todos.value = list
+            }
+        }
+    }
+
     fun setFilter(f: TodoFilter) {
         _filter.value = f
     }
 
-    // addTask without deadline
-    fun addTask(title: String) {
-        val nextId = (_todos.value.maxOfOrNull { it.id } ?: 0) + 1
-        val now = System.currentTimeMillis()
-        val newTask = Todo(id = nextId, title = title, createdAt = now)
-        _todos.value = _todos.value + newTask
-    }
-    fun toggleTask(id: Int) {
-        _todos.value = _todos.value.map { t ->
-            if (t.id == id) t.copy(isDone = !t.isDone) else t
+    fun addTask(judul: String) {
+        viewModelScope.launch {
+            val todo = Todo(title = judul)
+            repos.addTodo(todo)
         }
     }
-    fun deleteTask(id: Int) {
-        _todos.value = _todos.value.filterNot { it.id == id }
+    fun toggleTask(todo: Todo) {
+        viewModelScope.launch {
+            repos.updateTodo(todo)
+        }
+    }
+    fun deleteTask(todo: Todo) {
+        viewModelScope.launch {
+            repos.deleteTodo(todo)
+        }
     }
 }
